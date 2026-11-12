@@ -42,11 +42,7 @@ jobs:
 
       - name: Notify Make
         run: |
-          CB=$(python -c "import json;print(json.load(open('job.json'))['callback_url'])")
-          META=$(python -c "import json;print(json.dumps(json.load(open('job.json')).get('meta',{})))")
-          python - <<EOF
-          import json, os, urllib.request
-          body = json.dumps({"video_url": os.environ["VIDEO_URL"], "meta": json.loads('''$META''')}).encode()
-          req = urllib.request.Request("$CB", data=body, headers={"Content-Type": "application/json"})
-          print(urllib.request.urlopen(req, timeout=60).status)
-          EOF
+          CB=$(jq -r .callback_url job.json)
+          META=$(jq -c '.meta // {}' job.json)
+          jq -n --arg url "$VIDEO_URL" --argjson meta "$META" '{video_url:$url, meta:$meta}' > out.json
+          curl -sS -f -X POST -H "Content-Type: application/json" --data @out.json "$CB"
