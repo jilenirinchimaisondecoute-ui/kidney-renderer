@@ -1,0 +1,52 @@
+name: render-video
+
+on:
+  repository_dispatch:
+    types: [render]
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-hosny-amiri fontconfig
+          pip install -r requirements.txt
+
+      - name: Save job
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: printf '%s' "$PAYLOAD" > job.json
+
+      - name: Render video
+        run: python render.py job.json
+
+      - name: Publish video as release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="video-${{ github.run_id }}"
+          gh release create "$TAG" out/video.mp4 --title "$TAG" --notes "auto" --repo "${{ github.repository }}"
+          echo "VIDEO_URL=https://github.com/${{ github.repository }}/releases/download/$TAG/video.mp4" >> "$GITHUB_ENV"
+
+      - name: Notify Make
+        run: |
+          CB=$(python -c "import json;print(json.load(open('job.json'))['callback_url'])")
+          META=$(python -c "import json;print(json.dumps(json.load(open('job.json')).get('meta',{})))")
+          python - <<EOF
+          import json, os, urllib.request
+          body = json.dumps({"video_url": os.environ["VIDEO_URL"], "meta": json.loads('''$META''')}).encode()
+          req = urllib.request.Request("$CB", data=body, headers={"Content-Type": "application/json"})
+          print(urllib.request.urlopen(req, timeout=60).status)
+          EOF
