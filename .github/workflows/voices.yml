@@ -1,0 +1,30 @@
+name: voices-test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  voices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Make samples
+        run: |
+          pip install edge-tts
+          python voices.py
+
+      - name: Publish samples
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="voices-${{ github.run_id }}"
+          gh release create "$TAG" samples/*.mp3 --title "$TAG" --notes-file notes.txt --repo "${{ github.repository }}"
