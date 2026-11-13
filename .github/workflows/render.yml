@@ -48,3 +48,18 @@ jobs:
           META=$(jq -c '.meta // {}' job.json)
           jq -n --arg url "$VIDEO_URL" --argjson meta "$META" --slurpfile res out/result.json '{video_url:$url, meta:$meta, duration:$res[0].duration, in_range:$res[0].in_range}' > notify.json
           curl -sS -f -X POST -H "Content-Type: application/json" --data @notify.json "$CB"
+
+      - name: Send to Telegram
+        continue-on-error: true
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          TITLE=$(jq -r '.meta.title // .title // ""' job.json)
+          CAP=$(jq -r '.meta.caption // ""' job.json)
+          TAGS=$(jq -r '.meta.hashtags // ""' job.json)
+          TIME=$(jq -r '.meta.publish_time // ""' job.json)
+          DUR=$(jq -r '.duration' out/result.json)
+          printf '🎬 %s\n\n%s\n\n%s\n\n⏰ وقت النشر المقترح: %s\n⏱ المدة: %s ث\n\nللموافقة اكتب: ok\nللرفض اكتب: No' "$TITLE" "$CAP" "$TAGS" "$TIME" "$DUR" > caption.txt
+          CAPTION=$(jq -Rrs '.[0:1000]' caption.txt)
+          curl -sS -f -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendVideo" -F chat_id="$TG_CHAT" -F video=@out/video.mp4 -F supports_streaming=true -F caption="$CAPTION"
