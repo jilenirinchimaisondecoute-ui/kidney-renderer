@@ -31,7 +31,7 @@ jobs:
 
       - name: Render video
         env:
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: python render.py job.json
 
       - name: Publish video as release
