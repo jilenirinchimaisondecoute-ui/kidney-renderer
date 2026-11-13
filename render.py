@@ -138,7 +138,7 @@ async def synth(text, voice, rate_pct, path):
 
 
 async def make_voice(job, mp3):
-    voice = job.get("voice") or "ar-LY-OmarNeural"  # صوت رجالي
+    voice = job.get("voice") or "ar-AE-HamdanNeural"  # صوت رجالي
     rate = -5
     await synth(job["script"], voice, rate, mp3)
     d = duration(mp3)
