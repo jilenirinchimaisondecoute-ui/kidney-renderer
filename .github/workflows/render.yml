@@ -10,7 +10,7 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +21,7 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-hosny-amiri fontconfig
+          sudo apt-get install -y ffmpeg fonts-hosny-amiri fontconfig libraqm0 libfribidi0
           pip install -r requirements.txt
 
       - name: Save job
@@ -30,6 +30,8 @@ jobs:
         run: printf '%s' "$PAYLOAD" > job.json
 
       - name: Render video
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: python render.py job.json
 
       - name: Publish video as release
@@ -44,5 +46,5 @@ jobs:
         run: |
           CB=$(jq -r .callback_url job.json)
           META=$(jq -c '.meta // {}' job.json)
-          jq -n --arg url "$VIDEO_URL" --argjson meta "$META" '{video_url:$url, meta:$meta}' > out.json
-          curl -sS -f -X POST -H "Content-Type: application/json" --data @out.json "$CB"
+          jq -n --arg url "$VIDEO_URL" --argjson meta "$META" --slurpfile res out/result.json '{video_url:$url, meta:$meta, duration:$res[0].duration, in_range:$res[0].in_range}' > notify.json
+          curl -sS -f -X POST -H "Content-Type: application/json" --data @notify.json "$CB"
