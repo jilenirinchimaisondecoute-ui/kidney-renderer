@@ -104,7 +104,35 @@ def make_text_layer(text, title, path):
     img.save(path)
 
 
+def _download(img_url, path):
+    r = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
+    with open(path, "wb") as f:
+        f.write(urllib.request.urlopen(r, timeout=60).read())
+    return path
+
+
+def fetch_pixabay(query, idx, path):
+    key = os.environ.get("PIXABAY_API_KEY", "").strip()
+    if not key or not query:
+        return None
+    try:
+        url = "https://pixabay.com/api/?" + urllib.parse.urlencode(
+            {"key": key, "q": query, "image_type": "photo", "orientation": "vertical",
+             "safesearch": "true", "per_page": 10})
+        hits = json.load(urllib.request.urlopen(url, timeout=30)).get("hits", [])
+        if not hits:
+            return None
+        h = hits[idx % len(hits)]
+        return _download(h.get("largeImageURL") or h.get("webformatURL"), path)
+    except Exception as e:
+        print("pixabay failed:", query, e)
+        return None
+
+
 def fetch_photo(query, idx, path):
+    got = fetch_pixabay(query, idx, path)
+    if got:
+        return got
     key = os.environ.get("PEXELS_API_KEY", "").strip()
     if not key or not query:
         return None
@@ -116,11 +144,7 @@ def fetch_photo(query, idx, path):
         if not photos:
             return None
         src = photos[idx % len(photos)]["src"]
-        img_url = src.get("large2x") or src.get("large") or src.get("original")
-        r = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
-        with open(path, "wb") as f:
-            f.write(urllib.request.urlopen(r, timeout=60).read())
-        return path
+        return _download(src.get("large2x") or src.get("large") or src.get("original"), path)
     except Exception as e:
         print("pexels failed:", query, e)
         return None
