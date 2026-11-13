@@ -111,27 +111,36 @@ def _download(img_url, path):
     return path
 
 
-def fetch_pixabay(query, idx, path):
+USED = set()  # لمنع تكرار الصورة نفسها في أكثر من مشهد
+
+
+def fetch_pixabay(query, idx, path, kind="photo"):
     key = os.environ.get("PIXABAY_API_KEY", "").strip()
     if not key or not query:
         return None
+    kind = kind if kind in ("photo", "illustration", "vector") else "photo"
     try:
-        url = "https://pixabay.com/api/?" + urllib.parse.urlencode(
-            {"key": key, "q": query, "image_type": "photo", "orientation": "vertical",
-             "safesearch": "true", "per_page": 10})
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        hits = json.load(urllib.request.urlopen(req, timeout=30)).get("hits", [])
+        hits = []
+        for orient in ("vertical", "all"):
+            url = "https://pixabay.com/api/?" + urllib.parse.urlencode(
+                {"key": key, "q": query, "image_type": kind, "orientation": orient,
+                 "safesearch": "true", "per_page": 20})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            hits = json.load(urllib.request.urlopen(req, timeout=30)).get("hits", [])
+            if hits:
+                break
         if not hits:
             return None
-        h = hits[idx % len(hits)]
+        h = next((x for x in hits if x["id"] not in USED), hits[0])  # الأقرب للمعنى أولاً
+        USED.add(h["id"])
         return _download(h.get("largeImageURL") or h.get("webformatURL"), path)
     except Exception as e:
         print("pixabay failed:", query, e)
         return None
 
 
-def fetch_photo(query, idx, path):
-    got = fetch_pixabay(query, idx, path)
+def fetch_photo(query, idx, path, kind="photo"):
+    got = fetch_pixabay(query, idx, path, kind)
     if got:
         return got
     key = os.environ.get("PEXELS_API_KEY", "").strip()
@@ -181,7 +190,7 @@ def build_video(job, mp3, total):
     scale = (total + 0.4) / sum(weights)
     clips = []
     for i, s in enumerate(scenes):
-        photo = fetch_photo(s.get("image_query", ""), i, OUT / f"photo{i}.jpg")
+        photo = fetch_photo(s.get("image_query", ""), i, OUT / f"photo{i}.jpg", s.get("image_type", "photo"))
         bg, tx, clip = OUT / f"bg{i}.jpg", OUT / f"tx{i}.png", OUT / f"clip{i}.mp4"
         make_background(i, photo, bg)
         make_text_layer(s["text"], job["title"], tx)
