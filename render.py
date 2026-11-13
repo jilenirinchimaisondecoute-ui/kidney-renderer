@@ -119,7 +119,8 @@ def fetch_pixabay(query, idx, path):
         url = "https://pixabay.com/api/?" + urllib.parse.urlencode(
             {"key": key, "q": query, "image_type": "photo", "orientation": "vertical",
              "safesearch": "true", "per_page": 10})
-        hits = json.load(
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        hits = json.load(urllib.request.urlopen(req, timeout=30)).get("hits", [])
         if not hits:
             return None
         h = hits[idx % len(hits)]
