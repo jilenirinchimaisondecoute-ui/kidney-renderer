@@ -1,5 +1,6 @@
 """خط الإنتاج اليومي: أفكار (Gemini) -> فيديوهات -> تيليغرام، ومعالجة ردود ok / No."""
 import json, os, re, subprocess, sys, time, traceback, urllib.error, urllib.request
+from html.parser import HTMLParser
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -43,7 +44,104 @@ BAD_PATTERNS = [
     r"[0-9٠-٩]+\s*(mg|ml|g|kg|ملغ|ملغم|ميلغرام|مل|ملل|غرام|جرام|كغ|لتر|كوب|أكواب|كأس|كؤوس)",
     r"جرعة|جرعات|ميلغرام|ملغ",
 ]
-SOURCES_HINT = "منظمة الصحة العالمية (WHO)، NIDDK/NIH، المؤسسة الوطنية للكلى (NKF)، KDIGO، Mayo Clinic، CDC، NHS، American Kidney Fund، الجمعية الدولية لأمراض الكلى (ISN)"
+
+# مصادر موثوقة تُقرأ مباشرة
+SOURCES = [
+    {"name": "NIDDK (المعاهد الوطنية الأمريكية للصحة)", "cats": ["explain_ckd", "good_habit"],
+     "url": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"},
+    {"name": "NIDDK (المعاهد الوطنية الأمريكية للصحة)", "cats": ["explain_ckd", "bad_habit", "good_habit"],
+     "url": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/causes"},
+    {"name": "NIDDK (المعاهد الوطنية الأمريكية للصحة)", "cats": ["meal_idea", "good_habit", "patient_advice"],
+     "url": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"},
+    {"name": "NIDDK (المعاهد الوطنية الأمريكية للصحة)", "cats": ["meal_idea", "patient_advice"],
+     "url": "https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/eating-right"},
+    {"name": "NIDDK (المعاهد الوطنية الأمريكية للصحة)", "cats": ["patient_advice", "good_habit", "explain_ckd"],
+     "url": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["explain_aki", "bad_habit", "patient_advice"],
+     "url": "https://www.kidney.org/kidney-topics/acute-kidney-injury-aki"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["explain_ckd", "patient_advice"],
+     "url": "https://www.kidney.org/kidney-topics/chronic-kidney-disease-ckd"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["bad_habit", "patient_advice"],
+     "url": "https://www.kidney.org/kidney-topics/pain-medicines-and-kidney-disease"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["bad_habit", "good_habit", "patient_advice"],
+     "url": "https://www.kidney.org/kidney-topics/five-surprising-ways-you-could-be-damaging-your-kidneys"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["meal_idea", "good_habit"],
+     "url": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"},
+    {"name": "المؤسسة الوطنية للكلى (NKF)", "cats": ["explain_ckd", "patient_advice", "good_habit"],
+     "url": "https://www.kidney.org/kidney-topics/can-my-gfr-get-better"},
+    {"name": "Mayo Clinic", "cats": ["explain_aki", "bad_habit"],
+     "url": "https://www.mayoclinic.org/diseases-conditions/kidney-failure/symptoms-causes/syc-20369048"},
+    {"name": "Mayo Clinic", "cats": ["explain_ckd", "bad_habit", "good_habit"],
+     "url": "https://www.mayoclinic.org/diseases-conditions/chronic-kidney-disease/symptoms-causes/syc-20354521"},
+    {"name": "NHS (الخدمة الصحية البريطانية)", "cats": ["explain_aki", "patient_advice"],
+     "url": "https://www.nhs.uk/conditions/acute-kidney-injury/"},
+    {"name": "NHS (الخدمة الصحية البريطانية)", "cats": ["explain_ckd", "patient_advice", "good_habit"],
+     "url": "https://www.nhs.uk/conditions/kidney-disease/treatment/"},
+    {"name": "منظمة الصحة العالمية (WHO)", "cats": ["explain_ckd", "good_habit"],
+     "url": "https://www.who.int/news-room/fact-sheets/detail/kidney-disease"},
+    {"name": "CDC (مراكز السيطرة على الأمراض)", "cats": ["explain_ckd", "good_habit", "bad_habit"],
+     "url": "https://www.cdc.gov/kidney-disease/about/index.html"},
+]
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+
+
+class _Text(HTMLParser):
+    SKIP = {"script", "style", "nav", "footer", "header", "noscript", "svg", "form", "aside", "button"}
+
+    def __init__(self):
+        super().__init__()
+        self.depth, self.out = 0, []
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.SKIP:
+            self.depth += 1
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP and self.depth:
+            self.depth -= 1
+
+    def handle_data(self, data):
+        t = " ".join(data.split())
+        if not self.depth and len(t) > 25:
+            self.out.append(t)
+
+
+def fetch_text(url, limit=7000):
+    """يقرأ صفحة ويرجع نصها الرئيسي (أو None عند الفشل)."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,*/*;q=0.8",
+                                                   "Accept-Language": "en-US,en;q=0.9"})
+        with urllib.request.urlopen(req, timeout=45) as r:
+            raw = r.read(2_000_000).decode("utf-8", errors="ignore")
+        p = _Text()
+        p.feed(raw)
+        text = "\n".join(p.out)
+        if len(text) < 800:
+            print("fetch too short:", url, len(text))
+            return None
+        return text[:limit]
+    except Exception as e:
+        print("fetch failed:", url, str(e)[:100])
+        return None
+
+
+def pick_sources(cats, history):
+    """لكل فئة صفحة لم تُستعمل مؤخراً. يرجع {cat: {name,url,text}}."""
+    last_used = {}
+    for h in history:
+        if h.get("source"):
+            last_used[h["source"]] = h.get("date", "")
+    chosen, used_urls = {}, set()
+    for cat in cats:
+        cands = [x for x in SOURCES if cat in x["cats"] and x["url"] not in used_urls]
+        cands.sort(key=lambda x: last_used.get(x["url"], ""))
+        for x in cands:
+            text = fetch_text(x["url"])
+            if text:
+                chosen[cat] = {"name": x["name"], "url": x["url"], "text": text}
+                used_urls.add(x["url"])
+                break
+    return chosen
 
 
 # ----------------------------------------------------------------- أدوات عامة
@@ -217,28 +315,31 @@ def generate_ideas(n, today, history):
     recent_topics = [h.get("topic", "") for h in history[-150:] if h.get("topic")]
     base = today.toordinal() * 3
     cats = [CATEGORIES[(base + i) % len(CATEGORIES)] for i in range(n)]
-    cats_txt = "\n".join(f"{i + 1}) {c[0]}: {c[1]}" for i, c in enumerate(cats))
     avoid = "\n".join(f"- {t}" for t in (recent + recent_topics)[-120:]) or "(لا شيء بعد)"
 
-    research_prompt = (
-        "أنت محرر صحي متخصص في أمراض الكلى. ابحث على الإنترنت في مصادر موثوقة فقط "
-        f"({SOURCES_HINT}) لإعداد {n} مواضيع توعوية جديدة لمرضى الكلى، واحد لكل فئة:\n{cats_txt}\n\n"
-        f"لا تكرر أي موضوع من هذه القائمة السابقة:\n{avoid}\n\n"
-        "لكل موضوع اكتب: اسم الموضوع، ثم 4 إلى 6 حقائق مؤكدة مختصرة وآمنة للعموم، ثم اسم المصدر الذي اعتمدت عليه. "
-        "ممنوع ذكر جرعات أدوية أو كميات رقمية للسوائل أو الأملاح أو البروتين. اكتب بالعربية الفصحى المبسطة.")
-    try:
-        notes, srcs = gemini(research_prompt, search=True)
-    except Exception as e:  # بدون بحث (قد لا يتوفر في الحصة المجانية)
-        print("search grounding unavailable:", e)
-        tg_text("ℹ️ ميزة البحث في الإنترنت لم تتوفر اليوم، فاعتمد النموذج على معرفته. راجع المحتوى بعناية.\nالسبب: " + str(e)[:500])
-        notes, srcs = gemini(research_prompt.replace("ابحث على الإنترنت في", "اعتمد على معرفتك الموثوقة بـ"), search=False)
+    chosen = pick_sources([c[0] for c in cats], history)
+    if len(chosen) < n:
+        missing = [c[0] for c in cats if c[0] not in chosen]
+        tg_text("⚠️ تعذّرت قراءة المصادر الموثوقة لبعض الفئات (" + ", ".join(missing) + "). لن أنشر معلومات من ذاكرة النموذج؛ سأكتفي بالفئات المتوفرة.")
+    if not chosen:
+        raise RuntimeError("لم تُقرأ أي صفحة من المصادر الموثوقة")
+    cats = [c for c in cats if c[0] in chosen]
+    n = len(cats)
+    notes = ""
+    for i, c in enumerate(cats):
+        src = chosen[c[0]]
+        covered = [h.get("topic", "") for h in history if h.get("source") == src["url"] and h.get("topic")]
+        notes += (f"\n=== الفئة {i + 1}: {c[0]} ({c[1]}) ===\nالمصدر: {src['name']} — {src['url']}\n"
+                  + ("مواضيع سبق تناولها من هذه الصفحة (تجنبها): " + "، ".join(covered[-8:]) + "\n" if covered else "")
+                  + "نص الصفحة:\n" + src["text"] + "\n")
+    src_of = {c[0]: chosen[c[0]] for c in cats}
 
     write_prompt = f"""أنت كاتب سيناريوهات فيديوهات قصيرة (تيك توك) عن صحة الكلى للمرضى، بالعربية الفصحى المبسطة (لغة بيضاء واضحة، بلا لهجات).
-اعتمد فقط على الملاحظات التالية ولا تضف معلومة غير موجودة فيها:
+اعتمد حصراً على نصوص المصادر الموثوقة التالية (وهي بالإنجليزية فترجمها وبسّطها)، ولا تضف أي معلومة طبية غير موجودة فيها. لكل فيديو اختر جانباً واحداً محدداً من نص مصدر فئته:
 -----
 {notes}
 -----
-اكتب {n} فيديوهات، واحد لكل فئة بالترتيب: {", ".join(c[0] for c in cats)}.
+اكتب {n} فيديوهات، واحد لكل فئة بالترتيب: {", ".join(c[0] for c in cats)}، واكتب في الحقل category مفتاح الفئة نفسه.
 
 قواعد صارمة:
 - كل فيديو من 5 إلى 7 مشاهد، ومجموع كلمات حقول narration لكل فيديو بين 65 و80 كلمة.
@@ -274,7 +375,9 @@ def generate_ideas(n, today, history):
             if probs:
                 problems.append(f"«{idea.get('title', '?')}»: " + "؛ ".join(probs))
             elif len(good) < n:
-                idea["sources"] = srcs
+                src = src_of.get(idea.get("category")) or src_of[cats[len(good)][0]]
+                idea["sources"] = [src["name"]]
+                idea["source_url"] = src["url"]
                 good.append(idea)
         if len(good) < n:
             feedback = "\n\nأخطاء المحاولة السابقة، أصلحها واكتب الأفكار كلها من جديد:\n" + "\n".join(problems)
@@ -332,11 +435,11 @@ def run_daily():
             "id": f"{today:%Y%m%d}-{i + 1}", "date": str(today), "idx": i + 1, "version": 1,
             "category": idea.get("category", ""), "topic": idea.get("topic", ""), "title": idea["title"].strip(),
             "caption": idea.get("caption", "").strip(), "hashtags": idea.get("hashtags", "").strip(),
-            "publish_time": TIMES[i % 3], "sources": idea.get("sources", []),
+            "publish_time": TIMES[i % 3], "sources": idea.get("sources", []), "source_url": idea.get("source_url", ""),
             "scenes": finalize_scenes(idea["scenes"]), "status": "pending", "feedback": [],
         }
         history.append({"id": job["id"], "date": job["date"], "title": job["title"], "topic": job["topic"],
-                        "category": job["category"], "status": "pending"})
+                        "category": job["category"], "status": "pending", "source": job["source_url"]})
         save_json(HISTORY, history)  # نحفظ فوراً كي لا يضيع شيء إن فشل فيديو لاحق
         try:
             produce(job)
@@ -427,10 +530,22 @@ def run_reply():
         tg_text("لم أفهم ردّك. اكتب ok للموافقة، أو No ثم السبب للرفض (بالرد على رسالة الفيديو).")
 
 
+def run_check():
+    """يفحص أي المصادر الموثوقة يمكن قراءتها ويرسل التقرير إلى تيليغرام."""
+    lines, ok = [], 0
+    for x in SOURCES:
+        t = fetch_text(x["url"])
+        ok += 1 if t else 0
+        lines.append(("✅ " if t else "❌ ") + x["url"].split("//")[1][:70] + (f" ({len(t)})" if t else ""))
+    tg_text(f"فحص المصادر الموثوقة: {ok} من {len(SOURCES)} تعمل\n\n" + "\n".join(lines))
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "daily"
     try:
-        if mode == "reply":
+        if mode == "check":
+            run_check()
+        elif mode == "reply":
             run_reply()
         else:
             run_daily()
