@@ -143,20 +143,53 @@ async def synth(text, voice, rate_pct, path):
     await edge_tts.Communicate(text, voice, rate=f"{rate_pct:+d}%").save(str(path))
 
 
+GAP = 0.3  # صمت قصير بعد كل مشهد
+
+
+def has_narration(job):
+    sc = job.get("scenes") or []
+    return bool(sc) and all((x.get("narration") or "").strip() for x in sc)
+
+
 async def make_voice(job, mp3):
+    """يرجع (المدة الكلية، السرعة، قائمة مدد المشاهد أو None). عند وجود narration لكل مشهد
+    يُنطق كل مشهد وحده فيتطابق الصوت مع الصورة تماماً."""
     voice = job.get("voice") or "ar-AE-HamdanNeural"  # صوت رجالي
     rate = -5
-    await synth(job["script"], voice, rate, mp3)
-    d = duration(mp3)
-    if d < MIN_OK or d > MAX_OK:  # تعديل سرعة النطق ليقترب من 45 ثانية
-        new = (1 + rate / 100) * d / TARGET - 1
-        rate = max(-30, min(30, round(new * 100)))
+    if not has_narration(job):  # الطريقة القديمة: نص واحد
         await synth(job["script"], voice, rate, mp3)
         d = duration(mp3)
-    return d, rate
+        if d < MIN_OK or d > MAX_OK:
+            new = (1 + rate / 100) * d / TARGET - 1
+            rate = max(-30, min(30, round(new * 100)))
+            await synth(job["script"], voice, rate, mp3)
+            d = duration(mp3)
+        return d, rate, None
+    scenes = job["scenes"]
+    full = " ".join(x["narration"].strip() for x in scenes)
+    tmp = OUT / "probe.mp3"
+    await synth(full, voice, rate, tmp)
+    d = duration(tmp)
+    budget = TARGET - GAP * len(scenes)
+    if d + GAP * len(scenes) < MIN_OK or d + GAP * len(scenes) > MAX_OK:
+        new = (1 + rate / 100) * d / budget - 1
+        rate = max(-30, min(30, round(new * 100)))
+    parts, durs = [], []
+    for i, x in enumerate(scenes):
+        raw, wav = OUT / f"nar{i}.mp3", OUT / f"nar{i}.wav"
+        await synth(x["narration"].strip(), voice, rate, raw)
+        subprocess.run(["ffmpeg", "-y", "-i", str(raw), "-af", f"apad=pad_dur={GAP}", "-ar", "24000", "-ac", "1",
+                        str(wav)], check=True, capture_output=True)
+        durs.append(duration(wav))
+        parts.append(wav)
+    lst = OUT / "voice.txt"
+    lst.write_text("".join(f"file '{p.resolve()}'\n" for p in parts))
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), str(mp3)],
+                   check=True, capture_output=True)
+    return sum(durs), rate, durs
 
 
-def build_video(job, mp3, total):
+def build_video(job, mp3, total, durs=None):
     scenes = job["scenes"]
     weights = [max(float(s.get("seconds", 6)), 1) for s in scenes]
     scale = (total + 0.4) / sum(weights)
@@ -166,7 +199,7 @@ def build_video(job, mp3, total):
         bg, tx, clip = OUT / f"bg{i}.jpg", OUT / f"tx{i}.png", OUT / f"clip{i}.mp4"
         make_background(i, photo, bg)
         make_text_layer(s["text"], job["title"], tx)
-        dur = weights[i] * scale
+        dur = durs[i] if durs else weights[i] * scale
         frames = max(int(round(dur * 30)), 30)
         fc = (f"[0:v]zoompan=z='min(1+0.0007*on,1.18)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
               f":d={frames}:s={W}x{H}:fps=30[b];[b][1:v]overlay=0:0,format=yuv420p[v]")
@@ -184,9 +217,9 @@ def build_video(job, mp3, total):
 async def main(job_file):
     job = json.load(open(job_file, encoding="utf-8"))
     OUT.mkdir(exist_ok=True)
-    mp3 = OUT / "voice.mp3"
-    total, rate = await make_voice(job, mp3)
-    build_video(job, mp3, total)
+    mp3 = OUT / ("voice.wav" if has_narration(job) else "voice.mp3")
+    total, rate, durs = await make_voice(job, mp3)
+    build_video(job, mp3, total, durs)
     res = {"duration": round(total, 1), "in_range": MIN_OK <= total <= MAX_OK, "rate": rate}
     (OUT / "result.json").write_text(json.dumps(res))
     print(res)
