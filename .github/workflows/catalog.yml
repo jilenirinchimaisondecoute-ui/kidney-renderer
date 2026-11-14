@@ -1,0 +1,37 @@
+name: catalog
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "مفاهيم محددة (اختياري، مفصولة بفاصلة)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install pillow
+      - name: Build library and send contact sheets
+        env:
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: python catalog.py
+      - name: Commit library
+        run: |
+          git config user.name "kidney-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add library
+          git commit -m "Update image library" || echo "nothing to commit"
+          git push
