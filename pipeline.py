@@ -262,7 +262,29 @@ def too_similar(title, recent_titles):
     return None
 
 
+def as_text(v):
+    if isinstance(v, (list, tuple)):
+        return " ".join(str(x).strip() for x in v if str(x).strip())
+    return "" if v is None else str(v)
+
+
+def normalize_idea(idea):
+    """يحوّل الحقول إلى نصوص (قد يرجع النموذج قوائم) ويصحح الوسوم."""
+    for k in ("category", "topic", "title", "caption", "hashtags"):
+        idea[k] = as_text(idea.get(k)).strip()
+    tags = [t if t.startswith("#") else "#" + t for t in idea["hashtags"].replace(",", " ").split()]
+    idea["hashtags"] = " ".join(tags)
+    fixed = []
+    for sc in idea.get("scenes") or []:
+        if isinstance(sc, dict):
+            for k in ("text", "narration", "concept"):
+                sc[k] = as_text(sc.get(k)).strip()
+            fixed.append(sc)
+    idea["scenes"] = fixed
+
+
 def validate(idea, allowed, recent_titles):
+    normalize_idea(idea)
     probs = []
     scenes = idea.get("scenes") or []
     if not (5 <= len(scenes) <= 7):
@@ -349,7 +371,7 @@ def generate_ideas(n, today, history):
 - ممنوع ذكر جرعات أدوية أو كميات رقمية (ملغ، مل، غرام، أكواب...). ممنوع وعود العلاج أو الشفاء. أي نصيحة غذائية تُختم بأن الكمية والنوع يحددهما الطبيب أو أخصائي التغذية.
 - لا تنصح بالأعشاب أو المكملات. إن ذُكرت فللتحذير منها دون إشراف الطبيب.
 - لا تكتب جملة «هذه معلومات عامة...» ولا جملة المشاركة، فهما تُضافان تلقائياً.
-- title: عنوان جذاب لا يتجاوز 70 حرفاً. caption: وصف للمنشور في جملتين. hashtags: 5 وسوم تبدأ بـ # (عربية وإنجليزية).
+- title: عنوان جذاب لا يتجاوز 70 حرفاً. caption: وصف للمنشور في جملتين (نص واحد). hashtags: 5 وسوم تبدأ بـ # مفصولة بمسافات (نص واحد وليس قائمة).
 - topic: اسم الموضوع في 3 إلى 6 كلمات (لمنع التكرار لاحقاً).
 - يجب أن تختلف العناوين عن هذه السابقة:
 {avoid}
@@ -469,9 +491,10 @@ text لا يزيد عن 7 كلمات، concept من القائمة فقط ويج
         try:
             text, _ = gemini(prompt, json_mode=True, temperature=0.6)
             scenes = parse_json(text).get("scenes", [])
-            probs = validate({"scenes": scenes, "title": job["title"]}, allowed, [])
+            idea = {"scenes": scenes, "title": job["title"]}
+            probs = validate(idea, allowed, [])
             if not probs:
-                return finalize_scenes(scenes)
+                return finalize_scenes(idea["scenes"])
             prompt += "\n\nأخطاء المحاولة السابقة: " + "؛ ".join(probs)
         except Exception as e:
             print("revise failed:", e)
