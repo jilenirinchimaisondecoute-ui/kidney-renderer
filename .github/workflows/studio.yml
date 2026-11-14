@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 3 * * *"   # 05:00 بتوقيت ليبيا
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "daily = توليد اليوم، check = فحص المصادر الموثوقة فقط"
+        required: false
+        default: "daily"
   repository_dispatch:
     types: [tg_reply]
 
@@ -36,7 +41,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
-          MODE: ${{ github.event_name == 'repository_dispatch' && 'reply' || 'daily' }}
+          MODE: ${{ github.event_name == 'repository_dispatch' && 'reply' || github.event.inputs.mode || 'daily' }}
           REPLY_TEXT: ${{ github.event.client_payload.text }}
           REPLIED: ${{ github.event.client_payload.replied }}
           CHAT: ${{ github.event.client_payload.chat_id }}
