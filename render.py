@@ -173,22 +173,27 @@ async def make_voice(job, mp3):
             d = duration(mp3)
         return d, rate, None
     scenes = job["scenes"]
-    full = " ".join(x["narration"].strip() for x in scenes)
-    tmp = OUT / "probe.mp3"
-    await synth(full, voice, rate, tmp)
-    d = duration(tmp)
-    budget = TARGET - GAP * len(scenes)
-    if d + GAP * len(scenes) < MIN_OK or d + GAP * len(scenes) > MAX_OK:
-        new = (1 + rate / 100) * d / budget - 1
-        rate = max(-30, min(30, round(new * 100)))
-    parts, durs = [], []
-    for i, x in enumerate(scenes):
-        raw, wav = OUT / f"nar{i}.mp3", OUT / f"nar{i}.wav"
-        await synth(x["narration"].strip(), voice, rate, raw)
-        subprocess.run(["ffmpeg", "-y", "-i", str(raw), "-af", f"apad=pad_dur={GAP}", "-ar", "24000", "-ac", "1",
-                        str(wav)], check=True, capture_output=True)
-        durs.append(duration(wav))
-        parts.append(wav)
+    n = len(scenes)
+    trim = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+            "silenceremove=start_periods=1:start_threshold=-45dB,areverse")
+    for attempt in range(3):
+        parts, durs = [], []
+        for i, x in enumerate(scenes):
+            raw, wav = OUT / f"nar{i}.mp3", OUT / f"nar{i}.wav"
+            await synth(x["narration"].strip(), voice, rate, raw)
+            subprocess.run(["ffmpeg", "-y", "-i", str(raw), "-af", f"{trim},apad=pad_dur={GAP}", "-ar", "24000",
+                            "-ac", "1", str(wav)], check=True, capture_output=True)
+            durs.append(duration(wav))
+            parts.append(wav)
+        total = sum(durs)
+        print(f"voice attempt {attempt + 1}: rate={rate} total={total:.1f}s")
+        if abs(total - TARGET) <= 2.0 or attempt == 2:
+            break
+        new = (1 + rate / 100) * (total - GAP * n) / (TARGET - GAP * n) - 1
+        new_rate = max(-30, min(30, round(new * 100)))
+        if new_rate == rate:
+            break
+        rate = new_rate
     lst = OUT / "voice.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\n" for p in parts))
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), str(mp3)],
@@ -202,7 +207,7 @@ def build_video(job, mp3, total, durs=None):
     scale = (total + 0.4) / sum(weights)
     clips = []
     for i, s in enumerate(scenes):
-        photo = pick_image(s.get("concept", ""), i, (job.get("meta") or {}).get("idx", 0))
+        photo = pick_image(s.get("concept", ""), i, (job.get("meta") or {}).get("idx", 0) + 11 * int(job.get("variant", 0)))
         bg, tx, clip = OUT / f"bg{i}.jpg", OUT / f"tx{i}.png", OUT / f"clip{i}.mp4"
         make_background(i, photo, bg)
         make_text_layer(s["text"], job["title"], tx)
