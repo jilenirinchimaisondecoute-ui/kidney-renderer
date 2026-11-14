@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont, features
 
 W, H = 1080, 1920
 OUT = Path("out")
-TARGET = 45.0          # مدة الصوت المستهدفة بالثواني
+TARGET = 47.0          # مدة الصوت المستهدفة بالثواني (تشمل الخاتمة)
 MIN_OK, MAX_OK = 40.0, 50.0
 PALETTES = [((8, 60, 90), (20, 130, 160)), ((20, 70, 80), (60, 160, 150)), ((15, 45, 95), (70, 120, 190))]
 
@@ -145,6 +145,13 @@ async def synth(text, voice, rate_pct, path):
 
 GAP = 0.3  # صمت قصير بعد كل مشهد
 
+# خاتمة ثابتة تُضاف تلقائياً إلى آخر كل فيديو
+OUTRO = {
+    "text": "لا تنسَ الإعجاب والمشاركة، صدقة جارية بإذن الله",
+    "narration": "لا تدع هذا الفيديو يقف عندك. لا تنسَ الإعجاب، وشاركه مع أصدقائك لتعمّ الفائدة، وتكون لك صدقةً جارية بإذن الله.",
+    "concept": "",
+}
+
 
 def has_narration(job):
     sc = job.get("scenes") or []
@@ -217,6 +224,8 @@ def build_video(job, mp3, total, durs=None):
 async def main(job_file):
     job = json.load(open(job_file, encoding="utf-8"))
     OUT.mkdir(exist_ok=True)
+    if has_narration(job) and not job.get("no_outro"):
+        job["scenes"] = list(job["scenes"]) + [OUTRO]
     mp3 = OUT / ("voice.wav" if has_narration(job) else "voice.mp3")
     total, rate, durs = await make_voice(job, mp3)
     build_video(job, mp3, total, durs)
