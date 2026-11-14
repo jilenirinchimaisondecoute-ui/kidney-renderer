@@ -22,5 +22,32 @@
   "topic": "نصائح يومية لحماية صحة الكلى",
   "category": "patient_advice",
   "status": "pending"
+ },
+ {
+  "id": "20261114-1",
+  "date": "2026-11-14",
+  "title": "هل تلاحظ قلة التبول فجأة؟ تعرف على الفشل الكلوي الحاد",
+  "topic": "أعراض الفشل الكلوي الحاد وأسبابه",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/acute-kidney-injury-aki"
+ },
+ {
+  "id": "20261114-2",
+  "date": "2026-11-14",
+  "title": "لماذا يسمى مرض الكلى المزمن بالصامت؟ وكيف تكتشفه؟",
+  "topic": "مرض الكلى المزمن وأهمية الفحص",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"
+ },
+ {
+  "id": "20261114-3",
+  "date": "2026-11-14",
+  "title": "كيف تختار طعامك بحكمة لحماية صحة كليتيك؟",
+  "topic": "التغذية الصحية لمرضى الكلى المزمن",
+  "category": "patient_advice",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
  }
 ]
