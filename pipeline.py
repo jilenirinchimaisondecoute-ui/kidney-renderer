@@ -12,7 +12,7 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT = os.environ.get("TG_CHAT", "")
 
-MODELS = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
 TIMES = ["08:00", "12:00", "18:00"]  # توقيت ليبيا
 CATEGORIES = [
     ("explain_aki", "شرح الفشل الكلوي الحاد: أسبابه وعلاماته ومتى يُراجَع الطبيب"),
@@ -100,7 +100,7 @@ def tg_video(video, caption):
 # ----------------------------------------------------------------- Gemini
 def gemini(prompt, search=False, json_mode=False, temperature=0.8):
     """يرجع (نص، قائمة مصادر). يجرب النماذج بالترتيب ويعيد المحاولة عند الازدحام."""
-    last = None
+    errors = []
     for model in MODELS:
         for attempt in range(3):
             body = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
@@ -127,19 +127,20 @@ def gemini(prompt, search=False, json_mode=False, temperature=0.8):
                 if text.strip():
                     print(f"gemini ok: {model} search={search} chars={len(text)} sources={len(srcs)}")
                     return text, srcs
-                last = f"{model}: empty response"
+                errors.append(f"{model}: empty")
             except urllib.error.HTTPError as e:
-                msg = e.read().decode(errors="ignore")[:300]
-                last = f"{model}: HTTP {e.code} {msg}"
-                print("gemini error:", last)
+                msg = e.read().decode(errors="ignore")
+                print(f"gemini error: {model}: HTTP {e.code} {msg[:400]}")
+                m2 = re.search(r'"message":\s*"([^"]{0,120})', msg)
+                errors.append(f"{model}: HTTP {e.code} {m2.group(1) if m2 else ''}")
                 if e.code in (429, 500, 503):
                     time.sleep(8 * (attempt + 1))
                     continue
                 break  # 400/403/404: جرّب النموذج التالي
             except Exception as e:
-                last = f"{model}: {e}"
+                errors.append(f"{model}: {str(e)[:80]}")
                 time.sleep(5)
-    raise RuntimeError("gemini failed: " + str(last))
+    raise RuntimeError("gemini failed -> " + " | ".join(errors[-6:]))
 
 
 def parse_json(text):
@@ -229,7 +230,7 @@ def generate_ideas(n, today, history):
         notes, srcs = gemini(research_prompt, search=True)
     except Exception as e:  # بدون بحث (قد لا يتوفر في الحصة المجانية)
         print("search grounding unavailable:", e)
-        tg_text("ℹ️ ميزة البحث في الإنترنت لم تتوفر اليوم، فاعتمد النموذج على معرفته. راجع المحتوى بعناية.")
+        tg_text("ℹ️ ميزة البحث في الإنترنت لم تتوفر اليوم، فاعتمد النموذج على معرفته. راجع المحتوى بعناية.\nالسبب: " + str(e)[:500])
         notes, srcs = gemini(research_prompt.replace("ابحث على الإنترنت في", "اعتمد على معرفتك الموثوقة بـ"), search=False)
 
     write_prompt = f"""أنت كاتب سيناريوهات فيديوهات قصيرة (تيك توك) عن صحة الكلى للمرضى، بالعربية الفصحى المبسطة (لغة بيضاء واضحة، بلا لهجات).
@@ -437,7 +438,7 @@ def main():
         raise
     except Exception as e:
         traceback.print_exc()
-        tg_text(f"⚠️ خطأ في النظام ({mode}): {str(e)[:300]}")
+        tg_text(f"⚠️ خطأ في النظام ({mode}): {str(e)[:700]}")
         raise
 
 
