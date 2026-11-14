@@ -1,4 +1,5 @@
-import asyncio, json, os, subprocess, sys, urllib.parse, urllib.request
+import asyncio, json, os, subprocess, sys
+from datetime import date
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, features
@@ -104,65 +105,31 @@ def make_text_layer(text, title, path):
     img.save(path)
 
 
-def _download(img_url, path):
-    r = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
-    with open(path, "wb") as f:
-        f.write(urllib.request.urlopen(r, timeout=60).read())
-    return path
+LIB = Path("library")
+try:
+    APPROVED = json.load(open("approved.json", encoding="utf-8"))
+except Exception:
+    APPROVED = {}
+USED_IMAGES = set()  # لمنع تكرار الصورة نفسها داخل الفيديو الواحد
 
 
-USED = set()  # لمنع تكرار الصورة نفسها في أكثر من مشهد
-STOP = {"person", "people", "man", "woman", "human", "with", "and", "the", "for", "healthy"}
-
-
-def stem(w):
-    w = w.lower().strip(",.")
-    return w[:-1] if w.endswith("s") and len(w) > 3 else w
-
-
-def match_words(query, must):
-    src = must if must else query.split()
-    if isinstance(src, str):
-        src = src.split(",")
-    return [stem(w) for w in src if len(w.strip()) >= 3 and w.strip().lower() not in STOP]
-
-
-def relevant(hit, words):
-    tags = hit.get("tags", "").lower()
-    return any(w in tags for w in words)
-
-
-def fetch_pixabay(query, idx, path, kind="photo", must=None):
-    key = os.environ.get("PIXABAY_API_KEY", "").strip()
-    if not key or not query:
+def pick_image(concept, scene_idx, video_idx):
+    """يختار صورة معتمدة فقط من المكتبة، بالتدوير حسب اليوم ورقم الفيديو. وإلا لا صورة (بطاقة نصية)."""
+    slots = APPROVED.get(concept) or []
+    paths = [LIB / concept / f"{n}.jpg" for n in slots if (LIB / concept / f"{n}.jpg").exists()]
+    if not paths:
+        print("no approved image for concept:", repr(concept), "-> plain card")
         return None
-    kind = kind if kind in ("photo", "illustration", "vector") else "photo"
-    words = match_words(query, must)
-    try:
-        cands = []
-        for orient in ("vertical", "all"):
-            url = "https://pixabay.com/api/?" + urllib.parse.urlencode(
-                {"key": key, "q": query, "image_type": kind, "orientation": orient,
-                 "safesearch": "true", "per_page": 30})
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            hits = json.load(urllib.request.urlopen(req, timeout=30)).get("hits", [])
-            cands += [h for h in hits if relevant(h, words) and h["id"] not in USED]
-            if cands:
-                break
-        if not cands:
-            print("no relevant image, using plain background:", query, words)
-            return None
-        h = cands[0]  # الأقرب للمعنى والمطابق للوسوم
-        USED.add(h["id"])
-        print("image ok:", query, "|", h.get("tags", ""))
-        return _download(h.get("largeImageURL") or h.get("webformatURL"), path)
-    except Exception as e:
-        print("pixabay failed:", query, e)
-        return None
-
-
-def fetch_photo(query, idx, path, kind="photo", must=None):
-    return fetch_pixabay(query, idx, path, kind, must)  # لا نستخدم أي مصدر آخر غير مُتحقَّق منه
+    start = date.today().toordinal() + 7 * int(video_idx) + scene_idx
+    for k in range(len(paths)):
+        p = paths[(start + k) % len(paths)]
+        if p not in USED_IMAGES:
+            USED_IMAGES.add(p)
+            print("image:", p)
+            return p
+    p = paths[start % len(paths)]  # كل الصور المعتمدة استُخدمت في هذا الفيديو
+    print("image (reused):", p)
+    return p
 
 
 def duration(path):
@@ -195,7 +162,7 @@ def build_video(job, mp3, total):
     scale = (total + 0.4) / sum(weights)
     clips = []
     for i, s in enumerate(scenes):
-        photo = fetch_photo(s.get("image_query", ""), i, OUT / f"photo{i}.jpg", s.get("image_type", "photo"), s.get("must_match"))
+        photo = pick_image(s.get("concept", ""), i, (job.get("meta") or {}).get("idx", 0))
         bg, tx, clip = OUT / f"bg{i}.jpg", OUT / f"tx{i}.png", OUT / f"clip{i}.mp4"
         make_background(i, photo, bg)
         make_text_layer(s["text"], job["title"], tx)
