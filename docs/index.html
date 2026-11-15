@@ -11,6 +11,19 @@
 <p>Kidney Guide is a small, non-commercial publishing tool that prepares short educational videos about kidney health for people living with kidney disease, in Modern Standard Arabic. Each video is based on information from trusted public-health sources (NIDDK, National Kidney Foundation, NHS, WHO) and is reviewed and approved by the account owner before it is published to the owner's own TikTok account.</p>
 <p>The tool is used by one person only: the owner of the TikTok account "دليل الكلى". It does not collect, store or process personal data of other TikTok users.</p>
 <p><strong>The videos are general educational information and are not a substitute for medical advice from a doctor.</strong></p>
+<h2>Connect your TikTok account (owner only)</h2>
+<p>The owner connects his own TikTok account once, so approved videos can be posted to it (Login Kit: <code>user.info.basic</code>; Content Posting API, Direct Post: <code>video.publish</code>).</p>
+<p><button id="connect" style="background:#fe2c55;color:#fff;border:0;padding:12px 22px;border-radius:6px;font-size:16px;cursor:pointer">Connect TikTok</button></p>
+<script>
+document.getElementById('connect').onclick=function(){
+var st=Math.random().toString(36).slice(2);
+var u='https://www.tiktok.com/v2/auth/authorize/?client_key=aw3h8mvndbqycrn2'
++'&scope='+encodeURIComponent('user.info.basic,video.publish')
++'&response_type=code&redirect_uri='+encodeURIComponent('https://jilenirinchimaisondecoute-ui.github.io/kidney-renderer/callback.html')
++'&state='+st;
+location.href=u;};
+</script>
+<hr>
 <ul>
 <li><a href="privacy.html">Privacy Policy</a></li>
 <li><a href="terms.html">Terms of Service</a></li>
