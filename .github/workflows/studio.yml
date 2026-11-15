@@ -44,6 +44,7 @@ jobs:
           MODE: ${{ github.event_name == 'repository_dispatch' && 'reply' || github.event.inputs.mode || 'daily' }}
           REPLY_TEXT: ${{ github.event.client_payload.text }}
           REPLIED: ${{ github.event.client_payload.replied }}
+          REPLY_MSG: ${{ github.event.client_payload.msg_id }}
           CHAT: ${{ github.event.client_payload.chat_id }}
         run: python pipeline.py "$MODE"
 
