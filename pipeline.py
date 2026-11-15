@@ -540,9 +540,11 @@ def run_reply():
 
     if word in ("ok", "okay", "اوك", "أوك", "موافق", "نعم"):
         set_status("approved")
-        cap = (f"✅ تم الاعتماد — جاهز للنشر\n\n{job['title']}\n\n{job.get('caption', '')}\n\n{job.get('hashtags', '')}\n\n"
-               f"⏰ وقت النشر المقترح: {job.get('publish_time', '')}\n🆔 {jid}")
+        cap = (f"✅ تم الاعتماد — جاهز للنشر\n"
+               f"⏰ وقت النشر المقترح: {job.get('publish_time', '')} (بتوقيت ليبيا)\n🆔 {jid}\n\n"
+               "الوصف في الرسالة التالية، انسخه والصقه عند الجدولة.")
         tg_video(job["file_id"], cap)
+        tg_text(f"{job.get('caption', '')}\n\n{job.get('hashtags', '')}".strip())
     elif word in ("no", "لا", "رفض", "مرفوض"):
         tg_text("🔄 تم تسجيل الرفض. جارٍ إعادة صناعة الفيديو وإصلاح ما ذكرت، وسيصلك خلال دقائق.")
         job["feedback"].append(rest)
