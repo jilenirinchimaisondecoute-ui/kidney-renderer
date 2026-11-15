@@ -76,5 +76,32 @@
   "category": "good_habit",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
+ },
+ {
+  "id": "20261115-1",
+  "date": "2026-11-15",
+  "title": "كيف تؤثر مصادر البروتين على صحة الكلى؟",
+  "topic": "البروتين النباتي والحيواني لمرضى الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
+ },
+ {
+  "id": "20261115-2",
+  "date": "2026-11-15",
+  "title": "تقليل الملح لحماية الكلى وضبط الضغط",
+  "topic": "تقليل الصوديوم لحماية صحة الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/five-surprising-ways-you-could-be-damaging-your-kidneys"
+ },
+ {
+  "id": "20261115-3",
+  "date": "2026-11-15",
+  "title": "هل تعلم كيف تختار البروتين المناسب لحماية كليتيك؟",
+  "topic": "اختيار البروتينات النباتية لصحة الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
  }
 ]
