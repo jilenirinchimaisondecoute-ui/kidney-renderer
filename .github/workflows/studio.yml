@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-hosny-amiri fontconfig libraqm0 libfribidi0
-          pip install -r requirements.txt
+          pip install -r requirements.txt cryptography
 
       - name: Run pipeline
         env:
@@ -46,6 +46,9 @@ jobs:
           REPLIED: ${{ github.event.client_payload.replied }}
           REPLY_MSG: ${{ github.event.client_payload.msg_id }}
           CHAT: ${{ github.event.client_payload.chat_id }}
+          TT_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TT_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TT_PASS: ${{ secrets.TIKTOK_ENC_PASS }}
         run: python pipeline.py "$MODE"
 
       - name: Save state
