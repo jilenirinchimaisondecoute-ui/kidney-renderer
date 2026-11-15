@@ -103,5 +103,32 @@
   "category": "meal_idea",
   "status": "pending",
   "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
+ },
+ {
+  "id": "20261115-1",
+  "date": "2026-11-15",
+  "title": "دهون صحية تحمي قلبك وكليتيك معاً",
+  "topic": "اختيار الدهون الصحية وطرق الطهي السليمة",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261115-2",
+  "date": "2026-11-15",
+  "title": "كيف يحمي النشاط البدني وظائف كليتيك؟",
+  "topic": "ممارسة النشاط البدني لتعزيز صحة الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/can-my-gfr-get-better"
+ },
+ {
+  "id": "20261115-3",
+  "date": "2026-11-15",
+  "title": "كيف تختار الدهون الصحية لحماية كليتك؟",
+  "topic": "اختيار الدهون الصحية لمرضى الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
  }
 ]
