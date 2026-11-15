@@ -188,11 +188,11 @@ def tg_text(text):
 
 
 def tg_video(video, caption):
-    """video: مسار ملف (@path) أو file_id. يرجع file_id."""
+    """video: مسار ملف (@path) أو file_id. يرجع (file_id, message_id)."""
     v = f"@{video}" if os.path.exists(str(video)) else video
     res = tg_call("sendVideo", {"chat_id": TG_CHAT, "video": v, "caption": caption[:1000],
                                 "supports_streaming": "true"})
-    return res["video"]["file_id"]
+    return res["video"]["file_id"], res.get("message_id")
 
 
 # ----------------------------------------------------------------- Gemini
@@ -437,8 +437,9 @@ def caption_for(job, dur):
 
 def produce(job):
     path, dur = render_job(job)
-    fid = tg_video(str(path), caption_for(job, dur))
+    fid, mid = tg_video(str(path), caption_for(job, dur))
     job["file_id"] = fid
+    job.setdefault("msg_ids", []).append(mid)
     job["duration"] = dur
     save_json(JOBS / f"{job['id']}.json", job)
 
@@ -508,12 +509,20 @@ def run_reply():
     if TG_CHAT and chat and chat != str(TG_CHAT):
         print("ignored: chat mismatch")
         return
-    m = re.search(r"🆔\s*(\d{8}-\d)", replied)
-    if not m:
-        tg_text("⚠️ اكتب ردّك بالرد (Reply) على رسالة الفيديو نفسها حتى أعرف أي فيديو تقصد.")
+    msg_id = str(os.environ.get("REPLY_MSG") or "").strip()
+    job, jid = None, None
+    for f in sorted(JOBS.glob("*.json")):
+        j = load_json(f, None)
+        if j and msg_id and msg_id in [str(x) for x in j.get("msg_ids", [])]:
+            job, jid = j, j["id"]
+    if not job:
+        m = re.search(r"🆔\s*(\d{8}-\d)", replied)
+        if m:
+            jid = m.group(1)
+            job = load_json(JOBS / f"{jid}.json", None)
+    if not jid:
+        tg_text("⚠️ اكتب ردّك بالرد (Reply) على رسالة فيديو أرسلها البوت (الفيديوهات الجديدة فقط) حتى أعرف أي فيديو تقصد.")
         return
-    jid = m.group(1)
-    job = load_json(JOBS / f"{jid}.json", None)
     if not job:
         tg_text(f"⚠️ لم أجد بيانات الفيديو {jid}.")
         return
