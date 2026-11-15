@@ -74,7 +74,7 @@
   "title": "عادة ذهبية تحمي كليتيك وقلبك معا",
   "topic": "السيطرة على ضغط الدم لحماية الكلى",
   "category": "good_habit",
-  "status": "pending",
+  "status": "approved",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
  },
  {
@@ -101,7 +101,7 @@
   "title": "هل تعلم كيف تختار البروتين المناسب لحماية كليتيك؟",
   "topic": "اختيار البروتينات النباتية لصحة الكلى",
   "category": "meal_idea",
-  "status": "pending",
+  "status": "approved",
   "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
  },
  {
@@ -128,7 +128,7 @@
   "title": "كيف تختار الدهون الصحية لحماية كليتك؟",
   "topic": "اختيار الدهون الصحية لمرضى الكلى",
   "category": "meal_idea",
-  "status": "pending",
+  "status": "approved",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
  }
 ]
