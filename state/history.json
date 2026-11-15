@@ -49,5 +49,32 @@
   "category": "patient_advice",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261115-1",
+  "date": "2026-11-15",
+  "title": "أسرار الوجبة المنزلية الصحية لمرضى الكلى",
+  "topic": "إعداد وجبات منزلية لمرضى الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/eating-right"
+ },
+ {
+  "id": "20261115-2",
+  "date": "2026-11-15",
+  "title": "احذر هذه العادة اليومية لحماية كليتيك",
+  "topic": "تجنب الأدوية السامة للكلى عشوائيا",
+  "category": "bad_habit",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/causes"
+ },
+ {
+  "id": "20261115-3",
+  "date": "2026-11-15",
+  "title": "عادة ذهبية تحمي كليتيك وقلبك معا",
+  "topic": "السيطرة على ضغط الدم لحماية الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
  }
 ]
