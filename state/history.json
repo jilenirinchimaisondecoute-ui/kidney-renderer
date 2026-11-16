@@ -130,5 +130,32 @@
   "category": "meal_idea",
   "status": "approved",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261116-1",
+  "date": "2026-11-16",
+  "title": "توقف مفاجئ لوظائف الكلى: كيف تكتشفه؟",
+  "topic": "علامات وتشخيص الفشل الكلوي الحاد",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
+ },
+ {
+  "id": "20261116-2",
+  "date": "2026-11-16",
+  "title": "فحصان أساسيان لاكتشاف مرض الكلى المزمن",
+  "topic": "أهمية فحوصات مرض الكلى المزمن",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/chronic-kidney-disease-ckd"
+ },
+ {
+  "id": "20261116-3",
+  "date": "2026-11-16",
+  "title": "كيف يكتشف الأطباء التوقف المفاجئ للكلى؟",
+  "topic": "تشخيص الفشل الكلوي الحاد ومتابعة التعافي",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
  }
 ]
