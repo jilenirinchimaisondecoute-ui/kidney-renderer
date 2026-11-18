@@ -184,5 +184,23 @@
   "category": "meal_idea",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261118-1",
+  "date": "2026-11-18",
+  "title": "خيارات علاج الفشل الكلوي الحاد وأهمية المتابعة",
+  "topic": "طرق علاج الفشل الكلوي الحاد والمتابعة",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/acute-kidney-injury-aki"
+ },
+ {
+  "id": "20261118-2",
+  "date": "2026-11-18",
+  "title": "كيف تحمي كليتيك وتبطئ تطور المرض المزمن؟",
+  "topic": "خطوات نمط الحياة لحماية الكلى والسيطرة",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.who.int/news-room/fact-sheets/detail/kidney-disease"
  }
 ]
