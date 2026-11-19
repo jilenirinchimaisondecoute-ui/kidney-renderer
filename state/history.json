@@ -202,5 +202,32 @@
   "category": "explain_ckd",
   "status": "pending",
   "source": "https://www.who.int/news-room/fact-sheets/detail/kidney-disease"
+ },
+ {
+  "id": "20261119-1",
+  "date": "2026-11-19",
+  "title": "كيف تختار البروتين وتتجنب الفسفور المضاف؟",
+  "topic": "اختيار البروتين وتجنب الفسفور المضاف",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/eating-right"
+ },
+ {
+  "id": "20261119-2",
+  "date": "2026-11-19",
+  "title": "خطورة تناول مسكنات الألم لمرضى الكلى",
+  "topic": "تناول مسكنات الألم دون استشارة",
+  "category": "bad_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/pain-medicines-and-kidney-disease"
+ },
+ {
+  "id": "20261119-3",
+  "date": "2026-11-19",
+  "title": "عادة عائلية تحمي أحباءك من مرض الكلى",
+  "topic": "تشجيع العائلة على فحص الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"
  }
 ]
