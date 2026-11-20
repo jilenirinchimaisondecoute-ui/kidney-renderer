@@ -229,5 +229,32 @@
   "category": "good_habit",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"
+ },
+ {
+  "id": "20261120-1",
+  "date": "2026-11-20",
+  "title": "كيف تحمي نفسك من الفشل الكلوي الحاد؟",
+  "topic": "خطوات تقليل خطر الفشل الكلوي الحاد",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
+ },
+ {
+  "id": "20261120-2",
+  "date": "2026-11-20",
+  "title": "كيف يؤدي السكري وضغط الدم لمرض الكلى؟",
+  "topic": "تأثير السكري والضغط على الكلى المزمن",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/causes"
+ },
+ {
+  "id": "20261120-3",
+  "date": "2026-11-20",
+  "title": "انتبه لعلامات القلب إذا كنت مريض كلى",
+  "topic": "علامات مشاكل القلب لمرضى الكلى",
+  "category": "patient_advice",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
  }
 ]
