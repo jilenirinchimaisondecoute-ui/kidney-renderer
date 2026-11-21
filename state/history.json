@@ -256,5 +256,32 @@
   "category": "patient_advice",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
+ },
+ {
+  "id": "20261121-1",
+  "date": "2026-11-21",
+  "title": "كشف المكونات المخفية في الأطعمة لمرضى الكلى",
+  "topic": "تجنب الفسفور المضاف لحماية العظام",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
+ },
+ {
+  "id": "20261121-2",
+  "date": "2026-11-21",
+  "title": "كيف تؤثر المشروبات الغازية على صحة كليتك؟",
+  "topic": "تأثير شرب المشروبات الغازية على الكلى",
+  "category": "bad_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/five-surprising-ways-you-could-be-damaging-your-kidneys"
+ },
+ {
+  "id": "20261121-3",
+  "date": "2026-11-21",
+  "title": "كيف تعرف أن جسمك يحصل على الكفاية من السوائل؟",
+  "topic": "التوازن في شرب السوائل ومراقبة البول",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/can-my-gfr-get-better"
  }
 ]
