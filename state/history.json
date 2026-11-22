@@ -283,5 +283,32 @@
   "category": "good_habit",
   "status": "pending",
   "source": "https://www.kidney.org/kidney-topics/can-my-gfr-get-better"
+ },
+ {
+  "id": "20261122-1",
+  "date": "2026-11-22",
+  "title": "هل يؤثر الفشل الكلوي الحاد على أعضاء أخرى؟",
+  "topic": "تأثير الفشل الكلوي الحاد على الأعضاء والمخاطر المستقبلية",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/acute-kidney-injury-aki"
+ },
+ {
+  "id": "20261122-2",
+  "date": "2026-11-22",
+  "title": "مضاعفات صحية قد يسببها مرض الكلى المزمن",
+  "topic": "مضاعفات مرض الكلى المزمن وتأثيراتها الصحية",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/chronic-kidney-disease-ckd"
+ },
+ {
+  "id": "20261122-3",
+  "date": "2026-11-22",
+  "title": "ماذا تفعل إذا فقدت شهيتك مع مرض الكلى؟",
+  "topic": "التعامل مع فقدان الشهية لمرضى الكلى",
+  "category": "patient_advice",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
  }
 ]

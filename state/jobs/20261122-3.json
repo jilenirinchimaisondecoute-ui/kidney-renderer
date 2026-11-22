@@ -1,0 +1,60 @@
+{
+ "id": "20261122-3",
+ "date": "2026-11-22",
+ "idx": 3,
+ "version": 1,
+ "category": "patient_advice",
+ "topic": "التعامل مع فقدان الشهية لمرضى الكلى",
+ "title": "ماذا تفعل إذا فقدت شهيتك مع مرض الكلى؟",
+ "caption": "تغير طعم الطعام وفقدان الشهية أمر شائع لدى مرضى الكلى المزمن. استشارة أخصائي التغذية تساعدك في الحصول على السعرات الكافية بطرق صحية تناسب حالتك.",
+ "hashtags": "#تغذية_مرضى_الكلى #مرض_الكلى_المزمن #نصائح_غذائية #أخصائي_تغذية #صحة_الكلى",
+ "publish_time": "18:00",
+ "sources": [
+  "NIDDK (المعاهد الوطنية الأمريكية للصحة)"
+ ],
+ "source_url": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease",
+ "scenes": [
+  {
+   "text": "تغير طعم الطعام وفقدان الشهية",
+   "narration": "هل تلاحظ أنك لم تعد ترغب في الأكل بسبب تغير طعم الأطعمة؟",
+   "concept": "healthy_meal"
+  },
+  {
+   "text": "مخاطر فقدان الوزن المفاجئ",
+   "narration": "تجنب تناول الطعام قد يؤدي لفقدان الوزن، مما يزيد وضعك الصحي سوءاً.",
+   "concept": "doctor_patient"
+  },
+  {
+   "text": "توفير الطاقات من مصادر مغذية",
+   "narration": "جسمك يحتاج السعرات الحرارية للحصول على الطاقة وإيقاف تدهور حالتك البدنية.",
+   "concept": "vegetables"
+  },
+  {
+   "text": "استشارة طبيبك أو أخصائي التغذية",
+   "narration": "تحدث مع طبيبك أو أخصائي التغذية لإيجاد طرق صحية تساعدك على الأكل.",
+   "concept": "appointment"
+  },
+  {
+   "text": "خطط غذائية تناسب احتياجك",
+   "narration": "سيساعدك الفريق الطبي في اختيار أطعمة مغذية تلائم رغبتك وتلبي احتياجات جسمك.",
+   "concept": "cooking_home"
+  },
+  {
+   "text": "تحديد احتياجاتك بواسطة مختص",
+   "narration": "تذكر دائماً أن نوعية الطعام والكميات المناسبة يحددها الطبيب أو أخصائي التغذية.",
+   "concept": "healthy_meal"
+  },
+  {
+   "text": "معلومات عامة وليست بديلاً عن استشارة الطبيب",
+   "narration": "هذه معلومات عامة وليست بديلاً عن استشارة الطبيب.",
+   "concept": "doctor_patient"
+  }
+ ],
+ "status": "pending",
+ "feedback": [],
+ "file_id": "BAACAgQAAxkDAAONawJmOtbbm5SJG4kiZGVG96IJM7oAAqUeAAIP8BlQwnijCK_VBYU9BA",
+ "msg_ids": [
+  141
+ ],
+ "duration": 46.8
+}
