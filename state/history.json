@@ -310,5 +310,32 @@
   "category": "patient_advice",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261123-1",
+  "date": "2026-11-23",
+  "title": "كيف يساعدك أخصائي التغذية في التخطيط لوجباتك؟",
+  "topic": "استشارة أخصائي التغذية لتخطيط الوجبات",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/eating-right"
+ },
+ {
+  "id": "20261123-2",
+  "date": "2026-11-23",
+  "title": "حذار من استخدام مسكنات الالتهاب دون استشارة",
+  "topic": "خطورة المسكنات مضادات التهاب غير الاستيروئيدية",
+  "category": "bad_habit",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/pain-medicines-and-kidney-disease"
+ },
+ {
+  "id": "20261123-3",
+  "date": "2026-11-23",
+  "title": "كيف يحمي السيطرة على الضغط كليتيك من التدهور؟",
+  "topic": "التحكم بضغط الدم لحماية وظائف الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/kidney-disease/treatment/"
  }
 ]
