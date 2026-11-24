@@ -337,5 +337,32 @@
   "category": "good_habit",
   "status": "pending",
   "source": "https://www.nhs.uk/conditions/kidney-disease/treatment/"
+ },
+ {
+  "id": "20261124-1",
+  "date": "2026-11-24",
+  "title": "هل تعلم أن انسداد الكلى يسبب توقفها المفاجئ؟",
+  "topic": "أسباب الفشل الكلوي الحاد المرتبطة بالانسداد",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
+ },
+ {
+  "id": "20261124-2",
+  "date": "2026-11-24",
+  "title": "ما هي خيارات الرعاية عند الوصول لمرحلة الفشل الكلوي؟",
+  "topic": "خيارات الرعاية عند مرحلة الفشل الكلوي",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.who.int/news-room/fact-sheets/detail/kidney-disease"
+ },
+ {
+  "id": "20261124-3",
+  "date": "2026-11-24",
+  "title": "كيف يفحص الطبيب صحة قلبك عند إصابتك بمرض الكلى؟",
+  "topic": "فحوصات تقييم صحة القلب لمرضى الكلى",
+  "category": "patient_advice",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
  }
 ]
