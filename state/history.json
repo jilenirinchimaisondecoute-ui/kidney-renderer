@@ -364,5 +364,32 @@
   "category": "patient_advice",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/heart-disease"
+ },
+ {
+  "id": "20261125-1",
+  "date": "2026-11-25",
+  "title": "لماذا يحتاج مريض الكلى لسعرات حرارية كافية؟",
+  "topic": "أهمية السعرات الحرارية لمرضى الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis"
+ },
+ {
+  "id": "20261125-2",
+  "date": "2026-11-25",
+  "title": "خطورة إهمال معرفة السبب الرئيسي لمرض الكلى",
+  "topic": "إهمال معرفة سبب مرض الكلى",
+  "category": "bad_habit",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/causes"
+ },
+ {
+  "id": "20261125-3",
+  "date": "2026-11-25",
+  "title": "كيف يحمي التعامل مع الضغط النفسي كليتيك؟",
+  "topic": "إدارة الضغط النفسي لمرضى الكلى",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"
  }
 ]
