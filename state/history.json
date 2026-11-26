@@ -391,5 +391,32 @@
   "category": "good_habit",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/what-is-chronic-kidney-disease"
+ },
+ {
+  "id": "20261126-1",
+  "date": "2026-11-26",
+  "title": "خطوات الطبيب لتحديد مسببات التوقف المفاجئ للكلى",
+  "topic": "تقييم التاريخ الصحي للقصور الحاد",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/acute-kidney-injury-aki"
+ },
+ {
+  "id": "20261126-2",
+  "date": "2026-11-26",
+  "title": "هل يمكن لمعدل ترشيح الكلى أن يرتفع مجددا؟",
+  "topic": "تحسن معدل ترشيح الكلى بين الحاد والمزمن",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/can-my-gfr-get-better"
+ },
+ {
+  "id": "20261126-3",
+  "date": "2026-11-26",
+  "title": "حقيقة تأثير صبغة الأشعة على صحة كليتيك",
+  "topic": "تأثير صبغات الأشعة على الكلى",
+  "category": "patient_advice",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/five-surprising-ways-you-could-be-damaging-your-kidneys"
  }
 ]
