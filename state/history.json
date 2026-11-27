@@ -418,5 +418,32 @@
   "category": "patient_advice",
   "status": "pending",
   "source": "https://www.kidney.org/kidney-topics/five-surprising-ways-you-could-be-damaging-your-kidneys"
+ },
+ {
+  "id": "20261127-1",
+  "date": "2026-11-27",
+  "title": "كيف تختار دهوناً مفيدة لجسمك مع مرض الكلى؟",
+  "topic": "إدراج الدهون غير المشبعة في التغذية",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261127-2",
+  "date": "2026-11-27",
+  "title": "لماذا يمنع مريض الكلى من مكملات البوتاسيوم؟",
+  "topic": "تجنب مكملات البوتاسيوم دون استشارة طبية",
+  "category": "good_habit",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/kidney-disease/treatment/"
+ },
+ {
+  "id": "20261127-3",
+  "date": "2026-11-27",
+  "title": "كيف يحميك اختيار الطعام المناسب من مشاكل العظام؟",
+  "topic": "مراعاة الفسفور في طعام مريض الكلى",
+  "category": "meal_idea",
+  "status": "pending",
+  "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
  }
 ]
