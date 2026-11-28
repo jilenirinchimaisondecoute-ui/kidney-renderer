@@ -445,5 +445,32 @@
   "category": "meal_idea",
   "status": "pending",
   "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd/healthy-eating-adults-chronic-kidney-disease"
+ },
+ {
+  "id": "20261128-1",
+  "date": "2026-11-28",
+  "title": "أدوية قد تضر كليتيك فجأة دون أن تدري",
+  "topic": "الأدوية والأمراض المسببة للفشل الكلوي الحاد",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
+ },
+ {
+  "id": "20261128-2",
+  "date": "2026-11-28",
+  "title": "كيف يحدد الطبيب مرحلة مرض الكلى؟",
+  "topic": "مراحل مرض الكلى المزمن وأهداف العلاج",
+  "category": "explain_ckd",
+  "status": "pending",
+  "source": "https://www.kidney.org/kidney-topics/chronic-kidney-disease-ckd"
+ },
+ {
+  "id": "20261128-3",
+  "date": "2026-11-28",
+  "title": "هل تعلم أن بعض الأدوية قد تضر كليتيك فجأة؟",
+  "topic": "تأثير أدوية معينة على وظائف الكلى",
+  "category": "explain_aki",
+  "status": "pending",
+  "source": "https://www.nhs.uk/conditions/acute-kidney-injury/"
  }
 ]
